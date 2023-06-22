@@ -8,7 +8,8 @@ defmodule Capstone.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Capstone.CacheServer, :ok}
+      Capstone.Repo,
+      Capstone.CacheServer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
