@@ -2,6 +2,9 @@ defmodule Capstone.Seed do
   alias NimbleCSV.RFC4180, as: CSV
   alias Capstone.{Airport, Repo}
 
+  @download_url "https://davidmegginson.github.io/ourairports-data/airports.csv"
+  @save_path "/tmp/airports.csv"
+
   def seed() do
     airports_csv()
     |> File.stream!()
@@ -16,18 +19,16 @@ defmodule Capstone.Seed do
   end
 
   defp airports_csv() do
-    path = "/tmp/airports.csv"
-
-    unless File.exists?(path) do
-      "https://davidmegginson.github.io/ourairports-data/airports.csv"
+    unless File.exists?(@save_path) do
+      @download_url
       |> Req.get!()
       |> (fn request -> request.body end).()
       |> CSV.dump_to_iodata()
       |> IO.iodata_to_binary()
-      |> (fn data -> File.write!(path, data) end).()
+      |> (fn data -> File.write!(@save_path, data) end).()
     end
 
-    path
+    @save_path
   end
 
   defp insert_batch(data) do

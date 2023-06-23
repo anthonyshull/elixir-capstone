@@ -22,8 +22,9 @@ defmodule Capstone.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:amqp, "3.3.0"},
       {:broadway, "1.0.7"},
-      {:broadway_kafka, "0.4.1"},
+      {:broadway_rabbitmq, "0.8.0"},
       {:ecto_sql, "3.10.1"},
       {:flow, "1.2.4"},
       {:nimble_csv, "1.2.0"},
