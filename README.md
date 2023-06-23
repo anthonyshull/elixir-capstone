@@ -16,7 +16,7 @@ There is no real practical use for the project; it is just a capstone to reinfor
 ## Setup
 
 ```
-%> docker run --hostname tickets --name rabbitmq -p 5672:5672 -d rabbitmq
+%> docker run --hostname rabbitmq --name rabbitmq -p 5672:5672 -d rabbitmq
 %> docker run -e POSTGRES_DB=capstone -e POSTGRES_USER=capstone -e POSTGRES_PASSWORD=capstone \
    --name postgres -p 5432:5432 -d postgres
 %> mix ecto.migrate
