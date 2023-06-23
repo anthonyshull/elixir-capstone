@@ -26,6 +26,7 @@ defmodule Capstone.MixProject do
       {:broadway_kafka, "0.4.1"},
       {:ecto_sql, "3.10.1"},
       {:flow, "1.2.4"},
+      {:nimble_csv, "1.2.0"},
       {:postgrex, "0.17.1"},
       {:req, "0.3.10"}
     ]

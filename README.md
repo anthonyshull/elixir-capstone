@@ -1,6 +1,6 @@
 # Capstone
 
-This data pipeline uses [Broadway](https://elixir-broadway.org), [dets](https://www.erlang.org/doc/man/dets.html), [Ecto](https://hexdocs.pm/ecto/Ecto.html), [Flow](https://hexdocs.pm/flow/Flow.html), and [kafka](https://kafka.apache.org).
+This data pipeline uses [Broadway](https://elixir-broadway.org), [dets](https://www.erlang.org/doc/man/dets.html), [Ecto](https://hexdocs.pm/ecto/Ecto.html), and [kafka](https://kafka.apache.org).
 
 This is a capstone project to reinforce learnings from three books:
 
@@ -10,10 +10,15 @@ This is a capstone project to reinforce learnings from three books:
 
 ## Setup
 ```
-%> docker run --name postgres -p 5432:5432 -e POSTGRES_DB=capstone \
-   -e POSTGRES_USER=capstone -e POSTGRES_PASSWORD=capstone -d postgres
+%> docker run -e POSTGRES_DB=capstone -e POSTGRES_USER=capstone -e POSTGRES_PASSWORD=capstone \
+   --name capstone -p 5432:5432 -d postgres
 %> mix ecto.migrate
+%> mix run priv/repo/seed.exs
 ```
+
+Running the seed file will first check for the presence of a CSV file containing airport data.
+If the file does not exist, it will download and save the file.
+It then loads the file, validates each entry against an [Ecto.Schema](https://hexdocs.pm/ecto/Ecto.Schema.html), and inserts the airports in chunks of 100.
 
 ## Usage
 
@@ -22,7 +27,7 @@ This is a capstone project to reinforce learnings from three books:
 ```
 
 ```elixir
-iex> GenServer.cast(Capstone.CacheServer, {:set, "foo", "bar"})
-iex> GenServer.call(Capstone.CacheServer, {:get, "foo"})
+iex> Capstone.Cache.set("foo", "bar")
+iex> Capstone.Cache.get("foo")
 "bar"
 ```
