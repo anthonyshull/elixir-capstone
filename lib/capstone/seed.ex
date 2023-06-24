@@ -37,12 +37,14 @@ defmodule Capstone.Seed do
 
   defp row_to_map(row) do
     %{
-      code: :binary.copy(Enum.at(row, 0)),
-      city: :binary.copy(Enum.at(row, 10)),
-      country: :binary.copy(Enum.at(row, 8)),
-      name: :binary.copy(Enum.at(row, 3)),
-      state: :binary.copy(Enum.at(row, 9)) |> String.slice(3, 2),
-      type: :binary.copy(Enum.at(row, 2))
+      code: Enum.at(row, 0) |> :binary.copy(),
+      city: Enum.at(row, 10) |> :binary.copy(),
+      country: Enum.at(row, 8) |> :binary.copy(),
+      latitude: Enum.at(row, 4) |> Float.parse() |> elem(0),
+      longitude: Enum.at(row, 5) |> Float.parse() |> elem(0),
+      name: Enum.at(row, 3) |> :binary.copy(),
+      state: Enum.at(row, 9) |> :binary.copy() |> String.slice(3, 2),
+      type: Enum.at(row, 2) |> :binary.copy()
     }
   end
 end

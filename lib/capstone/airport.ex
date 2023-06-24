@@ -6,11 +6,19 @@ defmodule Capstone.Airport do
   @primary_key {:code, :string, autogenerate: false}
 
   schema "airports" do
-    field :city, :string
-    field :country, :string
     field :name, :string
-    field :state, :string
     field :type, :string
+
+    field :city, :string
+    field :state, :string
+    field :country, :string
+
+    field :latitude, :float
+    field :longitude, :float
+
+    field :grid_id, :string
+    field :grid_x, :integer
+    field :grid_y, :integer
   end
 
   @doc false

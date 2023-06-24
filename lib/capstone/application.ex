@@ -9,7 +9,11 @@ defmodule Capstone.Application do
   def start(_type, _args) do
     children = [
       Capstone.CacheServer,
-      Capstone.Repo
+      Capstone.Repo,
+      Capstone.AirportPipeline,
+      # Capstone.AddressPipeline,
+      # Capstone.WeatherPipeline,
+      # Capstone.NotificationPipeline
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
