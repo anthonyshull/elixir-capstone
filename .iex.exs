@@ -1,15 +1,16 @@
-lookup = fn (city, state) ->
+lookup = fn(city, state) ->
   {:ok, connection} = AMQP.Connection.open()
   {:ok, channel} = AMQP.Channel.open(connection)
 
-  AMQP.Basic.publish(channel, "", "cities", "#{city},#{state}")
+  AMQP.Queue.declare(channel, "weather_pipeline")
 
-  AMQP.Connection.close(connection)
-end
+  AMQP.Queue.subscribe(channel, "weather_pipeline", fn payload, _meta ->
+    payload |> Jason.decode!() |> IO.inspect()
+  end)
 
-# lookup and wait for the results
-lookup_and_wait = fn(city, state) ->
-  lookup.(city, state)
+  AMQP.Basic.publish(channel, "", "airport_pipeline", %{"city" => city, "state" => state} |> Jason.encode!())
+
+  channel
 end
 
 Capstone.Seed.seed()

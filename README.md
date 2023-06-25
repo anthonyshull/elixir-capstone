@@ -12,7 +12,7 @@ The entire data-ingestion pipeline is wired together with [Broadway](https://eli
 ```mermaid
 flowchart LR
   A[Message] --> B[Airport Pipeline]
-  B --> C{Grid Information?}
+  B --> C{Grid Info?}
   C --> |No| D[Grid Pipeline]
   C --> |Yes| E[Weather Pipeline]
   D --> E
@@ -47,11 +47,10 @@ Starting up [iex](https://hexdocs.pm/iex/1.12/IEx.html) will kick off the seedin
 It will first check for the presence of a CSV file containing airport data.
 If the file does not exist, it will download and save the file.
 It then loads and parses the file in a [stream](https://hexdocs.pm/elixir/1.12/Stream.html), validates each airport entry against a [schema](https://hexdocs.pm/ecto/Ecto.Schema.html), and inserts the airports in batches of 100.
-The process is idempotent--it should take a few seconds to run the first time you load iex.
+The process is idempotent and should only take a few seconds to run the first time you load iex (mainly downloading the file).
 Thereafter, it will take milliseconds.
 
 ```elixir
-iex> Capstone.Cache.set("foo", "bar")
-iex> Capstone.Cache.get("foo")
-"bar"
+iex> channel = lookup.("Austin", "TX")
+iex> AMQP.Channel.close(channel)
 ```

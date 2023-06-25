@@ -10,7 +10,7 @@ defmodule Capstone.AirportPipeline do
   @producer_config [
     declare: [durable: true],
     on_failure: :reject,
-    queue: "cities"
+    queue: "airport_pipeline"
   ]
 
   def start_link(_args) do
@@ -24,13 +24,17 @@ defmodule Capstone.AirportPipeline do
   end
 
   def handle_message(_processor, message, _context) do
+    channel = message.metadata.amqp_channel
+
     Enum.each(message.data, fn airport ->
+      payload = airport |> Jason.encode!()
+
       if airport.grid_id == nil do
-        # If the Airport has grid information send it do the weather pipeline
-        IO.puts("No grid information for #{airport.name}")
+        IO.puts("Publishing to grid pipeline: #{airport.name}")
+        AMQP.Basic.publish(channel, "", "grid_pipeline", payload)
       else
-        # Otherwise, send it to the location pipeline
-        IO.puts("Grid information for #{airport.name}")
+        IO.puts("Publishing to weather pipeline: #{airport.name}")
+        AMQP.Basic.publish(channel, "", "weather_pipeline", payload)
       end
     end)
 
@@ -42,7 +46,7 @@ defmodule Capstone.AirportPipeline do
   end
 
   defp prepare_message(message) do
-    [city, state] = String.split(message.data, ",")
+    %{"city" => city, "state" => state} = message.data |> Jason.decode!()
 
     airports = Repo.all(from a in Airport, where: a.city == ^city and a.state == ^state)
 

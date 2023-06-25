@@ -27,6 +27,7 @@ defmodule Capstone.MixProject do
       {:broadway_rabbitmq, "0.8.0"},
       {:ecto_sql, "3.10.1"},
       {:flow, "1.2.4"},
+      {:jason, "1.4.0"},
       {:nimble_csv, "1.2.0"},
       {:postgrex, "0.17.1"},
       {:req, "0.3.10"}

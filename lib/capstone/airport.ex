@@ -3,6 +3,7 @@ defmodule Capstone.Airport do
 
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:code, :name, :type, :city, :state, :country, :latitude, :longitude, :grid_id, :grid_x, :grid_y]}
   @primary_key {:code, :string, autogenerate: false}
 
   schema "airports" do
@@ -24,8 +25,8 @@ defmodule Capstone.Airport do
   @doc false
   def changeset(airport, attrs) do
     airport
-    |> cast(attrs, [:city, :code, :country, :name, :state, :type])
-    |> validate_required([:city, :code, :name, :state])
+    |> cast(attrs, [:name, :type, :city, :state, :country, :latitude, :longitude, :grid_id, :grid_x, :grid_y])
+    |> validate_required([:name, :type, :city, :state, :country, :latitude, :longitude])
     |> validate_inclusion(:type, ["large_airport", "medium_airport", "small_airport"])
     |> validate_inclusion(:country, ["US"])
   end

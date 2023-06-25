@@ -11,7 +11,7 @@ defmodule Capstone.Application do
       Capstone.CacheServer,
       Capstone.Repo,
       Capstone.AirportPipeline,
-      # Capstone.LocationPipeline,
+      Capstone.GridPipeline,
       # Capstone.WeatherPipeline
     ]
 
