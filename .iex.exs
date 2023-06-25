@@ -12,5 +12,3 @@ lookup = fn(city, state) ->
 
   channel
 end
-
-Capstone.Seed.seed()

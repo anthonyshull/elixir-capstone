@@ -2,6 +2,9 @@ defmodule Capstone.CacheServer do
   use GenServer
 
   @table_name :cache
+  @save_path "/tmp/#{@table_name}"
+
+  def save_path, do: @save_path
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args, name: __MODULE__)
@@ -9,7 +12,7 @@ defmodule Capstone.CacheServer do
 
   @impl true
   def init(_args) do
-    :dets.open_file(@table_name, [{:file, "/tmp/#{@table_name}" |> String.to_charlist()}])
+    :dets.open_file(@table_name, [{:file, @save_path |> String.to_charlist()}])
 
     {:ok, %{}}
   end

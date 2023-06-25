@@ -54,3 +54,9 @@ Thereafter, it will take milliseconds.
 iex> channel = lookup.("Austin", "TX")
 iex> AMQP.Channel.close(channel)
 ```
+
+You can reset the data at any time with:
+
+```
+%> mix reset
+```

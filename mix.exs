@@ -7,7 +7,8 @@ defmodule Capstone.MixProject do
       version: "0.1.0",
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
@@ -31,6 +32,12 @@ defmodule Capstone.MixProject do
       {:nimble_csv, "1.2.0"},
       {:postgrex, "0.17.1"},
       {:req, "0.3.10"}
+    ]
+  end
+
+  defp aliases do
+    [
+      reset: ["ecto.rollback", "ecto.migrate", "run priv/reset.exs", "run priv/repo/seed.exs"],
     ]
   end
 end

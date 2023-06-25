@@ -1,9 +1,13 @@
 defmodule Capstone.Seed do
+  require Logger
+
   alias NimbleCSV.RFC4180, as: CSV
   alias Capstone.{Airport, Repo}
 
   @download_url "https://davidmegginson.github.io/ourairports-data/airports.csv"
   @save_path "/tmp/airports.csv"
+
+  def save_path, do: @save_path
 
   def seed() do
     airports_csv()
