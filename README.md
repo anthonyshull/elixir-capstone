@@ -1,11 +1,26 @@
 # Capstone
 
 At a high level, this project aims to get weather forecasts for airports in the United States.
-You can place a message with a `city,state` on [RabbitMQ](https://www.rabbitmq.com).
+You can send a message with a `city,state` over [RabbitMQ](https://www.rabbitmq.com).
 All airports in that city will be loaded from the database using [Ecto](https://hexdocs.pm/ecto/Ecto.html).
-We will check for current weather in our local cache (which uses [dets](https://www.erlang.org/doc/man/dets.html)).
-If the cache misses, we'll fetch the latest weather from the [NOAA API](https://www.ncdc.noaa.gov/cdo-web/webservices/v2).
-This is all wired together as a data-ingestion pipeline using [Broadway](https://elixir-broadway.org).
+If the airport does not have an assigned [National Weather Service](https://www.weather.gov/documentation/services-web-api) grid, we lookup the grid and store it in [PostgresSQL](https://www.postgresql.org).
+We then check the weather for that grid in our local cache (which uses [dets](https://www.erlang.org/doc/man/dets.html)).
+If the cache misses, we'll fetch the latest weather from NWS.
+Otherwise, we send out the cached result.
+The entire data-ingestion pipeline is wired together with [Broadway](https://elixir-broadway.org).
+
+```mermaid
+flowchart LR
+  A[Message] --> B[Airport Pipeline]
+  B --> C{Grid Information?}
+  C --> |No| D[Grid Pipeline]
+  C --> |Yes| E[Weather Pipeline]
+  D --> E
+  E --> F{Cache Hit?}
+  F --> |No| G[National Weather Service]
+  G --> F
+  F --> |Yes| H[Message]
+```
 
 There is no real practical use for the project; it is just a capstone to reinforce learning from these books:
 

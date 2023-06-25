@@ -11,9 +11,8 @@ defmodule Capstone.Application do
       Capstone.CacheServer,
       Capstone.Repo,
       Capstone.AirportPipeline,
-      # Capstone.AddressPipeline,
-      # Capstone.WeatherPipeline,
-      # Capstone.NotificationPipeline
+      # Capstone.LocationPipeline,
+      # Capstone.WeatherPipeline
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
