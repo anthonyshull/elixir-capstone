@@ -1,6 +1,8 @@
 defmodule Capstone.AirportPipeline do
   use Broadway
 
+  require Logger
+
   import Ecto.Query
 
   alias Capstone.{Airport, Repo}
@@ -30,10 +32,10 @@ defmodule Capstone.AirportPipeline do
       payload = airport |> Jason.encode!()
 
       if airport.grid_id == nil do
-        IO.puts("Publishing to grid pipeline: #{airport.name}")
+        Logger.debug("Publishing to grid pipeline: #{airport.name}")
         AMQP.Basic.publish(channel, "", "grid_pipeline", payload)
       else
-        IO.puts("Publishing to weather pipeline: #{airport.name}")
+        Logger.debug("Publishing to weather pipeline: #{airport.name}")
         AMQP.Basic.publish(channel, "", "weather_pipeline", payload)
       end
     end)

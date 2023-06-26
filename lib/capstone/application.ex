@@ -12,7 +12,7 @@ defmodule Capstone.Application do
       Capstone.Repo,
       Capstone.AirportPipeline,
       Capstone.GridPipeline,
-      # Capstone.WeatherPipeline
+      Capstone.WeatherPipeline
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -1,6 +1,8 @@
 defmodule Capstone.GridPipeline do
   use Broadway
 
+  require Logger
+
   alias Capstone.{Airport, Repo}
 
   @producer BroadwayRabbitMQ.Producer
@@ -28,7 +30,7 @@ defmodule Capstone.GridPipeline do
     airport = Airport.changeset(airport, Map.drop(message.data, ["code"]))
     airport = Repo.update!(airport)
 
-    IO.puts("Publishing to weather pipeline: #{airport.name}")
+    Logger.debug("Publishing to weather pipeline: #{airport.name}")
     AMQP.Basic.publish(channel, "", "weather_pipeline", airport |> Jason.encode!())
 
     message
