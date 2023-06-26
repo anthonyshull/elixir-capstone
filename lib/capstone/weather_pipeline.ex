@@ -1,5 +1,6 @@
 defmodule Capstone.WeatherPipeline do
   use Broadway
+  use Timex
 
   require Logger
 
@@ -42,24 +43,25 @@ defmodule Capstone.WeatherPipeline do
     map = message.data |> Jason.decode!()
     %{"grid_id" => grid_id, "grid_x" => grid_x, "grid_y" => grid_y} = map
     key = "#{grid_id},#{grid_x},#{grid_y}"
-    next_hour = DateTime.utc_now() |> end_of_hour() |> Map.update!(:hour, &(&1 - 1)) |> DateTime.to_iso8601()
 
     forecast =
-      case Cache.get("#{key},#{next_hour}") do
+      case Cache.get("#{key},#{next_hour()}") do
         nil ->
-          data = api_url(grid_id, grid_x, grid_y) |> Req.get!(redirect_log_level: false) |> (&(&1.body)).() |> Map.fetch!("properties")
+          data =
+            api_url(grid_id, grid_x, grid_y)
+            |> Req.get!(redirect_log_level: false)
+            |> (&(&1.body)).()
+            |> Map.fetch!("properties")
+            |> Map.fetch!("periods")
+            |> Enum.fetch!(0)
+            |> Map.take(["endTime", "shortForecast"])
 
-          updated = data |> Map.fetch!("updated")
-          {:ok, updated, _} = DateTime.from_iso8601(updated)
-          updated = updated |> end_of_hour() |> DateTime.to_iso8601()
+          end_time = data["endTime"] |> Timex.parse!("{ISO:Extended}") |> Timezone.convert(Timezone.get("UTC"))
+          Cache.set("#{key},#{end_time}", data["shortForecast"])
 
-          forecast = data |> Map.fetch!("periods") |> Enum.fetch!(0) |> Map.fetch!("shortForecast")
+          Logger.debug("Cache miss for #{key} : #{end_time} : #{next_hour()}")
 
-          Cache.set("#{key},#{updated}", forecast)
-
-          Logger.debug("Cache miss for #{key} : #{next_hour} : #{updated}")
-
-          forecast
+          data["shortForecast"]
         value ->
           Logger.debug("Cache hit for #{key}")
 
@@ -71,10 +73,11 @@ defmodule Capstone.WeatherPipeline do
     Broadway.Message.put_data(message, Map.merge(map, weather))
   end
 
+  defp next_hour do
+    Timex.now |> end_of_hour()
+  end
+
   defp end_of_hour(date_time) do
-    date_time
-    |> Map.replace(:minute, 0)
-    |> Map.replace(:second, 0)
-    |> Map.replace(:microsecond, {0, 0})
+    date_time |> Map.replace(:minute, 0) |> Map.replace(:second, 0) |> Timex.shift(hours: 1) |> Map.replace(:microsecond, {0, 0})
   end
 end

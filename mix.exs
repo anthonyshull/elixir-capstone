@@ -31,7 +31,8 @@ defmodule Capstone.MixProject do
       {:jason, "1.4.0"},
       {:nimble_csv, "1.2.0"},
       {:postgrex, "0.17.1"},
-      {:req, "0.3.10"}
+      {:req, "0.3.10"},
+      {:timex, "3.7.11"}
     ]
   end
 
