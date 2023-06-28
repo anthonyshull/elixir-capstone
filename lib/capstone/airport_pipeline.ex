@@ -3,8 +3,6 @@ defmodule Capstone.AirportPipeline do
 
   require Logger
 
-  import Ecto.Query
-
   alias Capstone.{Airport, Repo}
 
   @producer BroadwayRabbitMQ.Producer
@@ -28,7 +26,7 @@ defmodule Capstone.AirportPipeline do
   def handle_message(_processor, message, _context) do
     channel = message.metadata.amqp_channel
 
-    Enum.each(message.data, fn airport ->
+    Enum.map(message.data, fn airport ->
       payload = airport |> Jason.encode!()
 
       if airport.grid_id == nil do
@@ -44,14 +42,18 @@ defmodule Capstone.AirportPipeline do
   end
 
   def prepare_messages(messages, _context) do
-    Enum.map(messages, &prepare_message/1)
-  end
+    city_states = Enum.map(messages, fn message ->
+      %{"city" => city, "state" => state} = message.data |> Jason.decode!()
 
-  defp prepare_message(message) do
-    %{"city" => city, "state" => state} = message.data |> Jason.decode!()
+      "('#{city}','#{state}')"
+    end) |> Enum.join(",")
 
-    airports = Repo.all(from a in Airport, where: a.city == ^city and a.state == ^state)
+    {:ok, result} = Repo.query("SELECT * FROM airports WHERE (city, state) IN (#{city_states})")
 
-    Broadway.Message.put_data(message, airports)
+    airports = Enum.map(result.rows, &Repo.load(Airport, {result.columns, &1})) |> Enum.group_by(&(&1.city <> &1.state)) |> Map.values()
+
+    Enum.zip_with(messages, airports, fn message, airports ->
+      Broadway.Message.put_data(message, airports)
+    end)
   end
 end
