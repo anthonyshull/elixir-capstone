@@ -1,6 +1,8 @@
 defmodule Capstone.Airport do
   use Ecto.Schema
 
+  alias Capstone.Repo
+
   import Ecto.Changeset
 
   @derive {Jason.Encoder, only: [:code, :name, :type, :city, :state, :country, :latitude, :longitude, :grid_id, :grid_x, :grid_y]}
@@ -29,5 +31,13 @@ defmodule Capstone.Airport do
     |> validate_required([:name, :type, :city, :state, :country, :latitude, :longitude])
     |> validate_inclusion(:type, ["large_airport", "medium_airport", "small_airport"])
     |> validate_inclusion(:country, ["US"])
+  end
+
+  def in_cities_states(cities_states) do
+    cities_states = Enum.map(cities_states, fn {city, state} ->  "('#{city}','#{state}')" end) |> Enum.join(",")
+
+    {:ok, result} = Repo.query("SELECT * FROM airports WHERE (city, state) IN (#{cities_states})")
+
+    Enum.map(result.rows, &Repo.load(__MODULE__, {result.columns, &1})) |> Enum.group_by(&(&1.city <> &1.state))
   end
 end

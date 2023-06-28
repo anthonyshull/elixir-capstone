@@ -51,8 +51,7 @@ The process is idempotent and only takes a matter of seconds (mostly downloading
 ```
 
 ```elixir
-iex> channel = lookup.("Austin", "TX")
-iex> AMQP.Channel.close(channel)
+iex> lookup.("Austin", "TX")
 ```
 
 You can reset the data at any time with:

@@ -3,7 +3,7 @@ defmodule Capstone.Pipeline.Weather do
 
   require Logger
 
-  alias Capstone.{Cache, NationalWeatherService}
+  alias Capstone.{Cache, NationalWeatherService, Time}
 
   @producer BroadwayRabbitMQ.Producer
 
@@ -30,7 +30,7 @@ defmodule Capstone.Pipeline.Weather do
     key = "#{grid_id},#{grid_x},#{grid_y}"
 
     weather =
-      case Cache.get("#{key},#{next_hour()}") do
+      case Cache.get("#{key},#{Time.next_hour()}") do
         nil ->
           %{"end_time" => end_time, "weather" => weather} = NationalWeatherService.get_weather!(grid_id, grid_x, grid_y)
 
@@ -47,13 +47,5 @@ defmodule Capstone.Pipeline.Weather do
     AMQP.Basic.publish(message.metadata.amqp_channel, "", "weather_out", data |> Jason.encode!())
 
     message
-  end
-
-  defp next_hour do
-    Timex.now |> end_of_hour()
-  end
-
-  defp end_of_hour(date_time) do
-    date_time |> Map.replace(:minute, 0) |> Map.replace(:second, 0) |> Timex.shift(hours: 1) |> Map.replace(:microsecond, {0, 0})
   end
 end

@@ -3,7 +3,7 @@ defmodule Capstone.Pipeline.Airport do
 
   require Logger
 
-  alias Capstone.{Airport, Repo}
+  alias Capstone.Airport
 
   @producer BroadwayRabbitMQ.Producer
 
@@ -30,10 +30,8 @@ defmodule Capstone.Pipeline.Airport do
       payload = airport |> Jason.encode!()
 
       if airport.grid_id == nil do
-        Logger.debug("Publishing to grid pipeline: #{airport.name}")
         AMQP.Basic.publish(channel, "", "grid_pipeline", payload)
       else
-        Logger.debug("Publishing to weather pipeline: #{airport.name}")
         AMQP.Basic.publish(channel, "", "weather_pipeline", payload)
       end
     end)
@@ -42,15 +40,11 @@ defmodule Capstone.Pipeline.Airport do
   end
 
   def prepare_messages(messages, _context) do
-    city_states = Enum.map(messages, fn message ->
-      %{"city" => city, "state" => state} = message.data |> Jason.decode!()
+    cities_states = Enum.map(messages, fn message ->
+      message.data |> Jason.decode!() |> Map.take(["city", "state"]) |> Map.values() |> List.to_tuple()
+    end)
 
-      "('#{city}','#{state}')"
-    end) |> Enum.join(",")
-
-    {:ok, result} = Repo.query("SELECT * FROM airports WHERE (city, state) IN (#{city_states})")
-
-    airports = Enum.map(result.rows, &Repo.load(Airport, {result.columns, &1})) |> Enum.group_by(&(&1.city <> &1.state)) |> Map.values()
+    airports = Airport.in_cities_states(cities_states) |> Map.values()
 
     Enum.zip_with(messages, airports, fn message, airports ->
       Broadway.Message.put_data(message, airports)

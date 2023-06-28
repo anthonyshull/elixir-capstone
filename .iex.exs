@@ -11,6 +11,4 @@ lookup = fn(city, state) ->
   end)
 
   AMQP.Basic.publish(channel, "", "airport_pipeline", %{"city" => city, "state" => state} |> Jason.encode!())
-
-  channel
 end
