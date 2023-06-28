@@ -1,10 +1,9 @@
 defmodule Capstone.Pipeline.Weather do
   use Broadway
-  use Timex
 
   require Logger
 
-  alias Capstone.Cache
+  alias Capstone.{Cache, NationalWeatherService}
 
   @producer BroadwayRabbitMQ.Producer
 
@@ -25,52 +24,29 @@ defmodule Capstone.Pipeline.Weather do
   end
 
   def handle_message(_processor, message, _context) do
-    Logger.debug("Publishing to weather out: #{message.data["name"]}")
-    AMQP.Basic.publish(message.metadata.amqp_channel, "", "weather_out", message.data |> Jason.encode!())
+    data = message.data |> Jason.decode!()
 
-    message
-  end
-
-  def prepare_messages(messages, _context) do
-    Enum.map(messages, &prepare_message/1)
-  end
-
-  defp api_url(grid_id, grid_x, grid_y) do
-    "https://api.weather.gov/gridpoints/#{grid_id}/#{grid_x},#{grid_y}/forecast/hourly"
-  end
-
-  defp prepare_message(message) do
-    map = message.data |> Jason.decode!()
-    %{"grid_id" => grid_id, "grid_x" => grid_x, "grid_y" => grid_y} = map
+    %{"grid_id" => grid_id, "grid_x" => grid_x, "grid_y" => grid_y} = data
     key = "#{grid_id},#{grid_x},#{grid_y}"
 
-    forecast =
+    weather =
       case Cache.get("#{key},#{next_hour()}") do
         nil ->
-          data =
-            api_url(grid_id, grid_x, grid_y)
-            |> Req.get!(redirect_log_level: false)
-            |> (&(&1.body)).()
-            |> Map.fetch!("properties")
-            |> Map.fetch!("periods")
-            |> Enum.fetch!(0)
-            |> Map.take(["endTime", "shortForecast"])
+          %{"end_time" => end_time, "weather" => weather} = NationalWeatherService.get_weather!(grid_id, grid_x, grid_y)
 
-          end_time = data["endTime"] |> Timex.parse!("{ISO:Extended}") |> Timezone.convert(Timezone.get("UTC"))
-          Cache.set("#{key},#{end_time}", data["shortForecast"])
+          Cache.set("#{key},#{end_time}", weather)
 
-          Logger.debug("Cache miss for #{key} : #{end_time} : #{next_hour()}")
-
-          data["shortForecast"]
+          weather
         value ->
-          Logger.debug("Cache hit for #{key}")
-
           value
       end
 
-    weather = %{"weather" => forecast}
+    data = Map.merge(data, %{"weather" => weather})
+    message = Broadway.Message.put_data(message, data)
 
-    Broadway.Message.put_data(message, Map.merge(map, weather))
+    AMQP.Basic.publish(message.metadata.amqp_channel, "", "weather_out", data |> Jason.encode!())
+
+    message
   end
 
   defp next_hour do
