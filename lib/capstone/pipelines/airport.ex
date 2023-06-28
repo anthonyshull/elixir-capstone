@@ -1,4 +1,4 @@
-defmodule Capstone.AirportPipeline do
+defmodule Capstone.Pipeline.Airport do
   use Broadway
 
   require Logger
@@ -15,7 +15,7 @@ defmodule Capstone.AirportPipeline do
 
   def start_link(_args) do
     options = [
-      name: AirportPipeline,
+      name: Capstone.Pipeline.Airport,
       producer: [module: {@producer, @producer_config}],
       processors: [default: []]
     ]

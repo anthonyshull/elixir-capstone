@@ -1,4 +1,4 @@
-defmodule Capstone.WeatherPipeline do
+defmodule Capstone.Pipeline.Weather do
   use Broadway
   use Timex
 
@@ -16,7 +16,7 @@ defmodule Capstone.WeatherPipeline do
 
   def start_link(_args) do
     options = [
-      name: WeatherPipeline,
+      name: Capstone.Pipeline.Weather,
       producer: [module: {@producer, @producer_config}],
       processors: [default: []]
     ]

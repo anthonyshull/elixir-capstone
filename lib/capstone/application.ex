@@ -10,9 +10,9 @@ defmodule Capstone.Application do
     children = [
       Capstone.CacheServer,
       Capstone.Repo,
-      Capstone.AirportPipeline,
-      Capstone.GridPipeline,
-      Capstone.WeatherPipeline
+      Capstone.Pipeline.Airport,
+      Capstone.Pipeline.Grid,
+      Capstone.Pipeline.Weather
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

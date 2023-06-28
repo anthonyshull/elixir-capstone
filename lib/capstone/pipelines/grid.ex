@@ -1,4 +1,4 @@
-defmodule Capstone.GridPipeline do
+defmodule Capstone.Pipeline.Grid do
   use Broadway
 
   require Logger
@@ -15,7 +15,7 @@ defmodule Capstone.GridPipeline do
 
   def start_link(_args) do
     options = [
-      name: GridPipeline,
+      name: Capstone.Pipeline.Grid,
       producer: [module: {@producer, @producer_config}],
       processors: [default: []]
     ]
