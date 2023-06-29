@@ -29,6 +29,7 @@ defmodule Capstone.MixProject do
       {:ecto_sql, "3.10.1"},
       {:flow, "1.2.4"},
       {:jason, "1.4.0"},
+      {:mox, "1.0.2"},
       {:nimble_csv, "1.2.0"},
       {:postgrex, "0.17.1"},
       {:req, "0.3.10"},

@@ -38,6 +38,6 @@ defmodule Capstone.Airport do
 
     {:ok, result} = Repo.query("SELECT * FROM airports WHERE (city, state) IN (#{cities_states})")
 
-    Enum.map(result.rows, &Repo.load(__MODULE__, {result.columns, &1})) |> Enum.group_by(&(&1.city <> &1.state))
+    Enum.map(result.rows, &Repo.load(__MODULE__, {result.columns, &1})) |> Enum.group_by(&("#{&1.city}, #{&1.state}"))
   end
 end

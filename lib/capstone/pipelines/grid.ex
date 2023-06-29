@@ -3,7 +3,7 @@ defmodule Capstone.Pipeline.Grid do
 
   require Logger
 
-  alias Capstone.{Airport, NationalWeatherService, Repo}
+  alias Capstone.{Airport, Repo, Weather}
 
   @producer BroadwayRabbitMQ.Producer
 
@@ -44,7 +44,7 @@ defmodule Capstone.Pipeline.Grid do
 
     %{"latitude" => latitude, "longitude" => longitude} = map
 
-    grid = NationalWeatherService.get_grid!(latitude, longitude)
+    grid = Weather.get_grid!(latitude, longitude)
 
     Broadway.Message.put_data(message, Map.merge(map, grid))
   end

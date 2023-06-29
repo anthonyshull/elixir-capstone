@@ -3,7 +3,7 @@ defmodule Capstone.Pipeline.Weather do
 
   require Logger
 
-  alias Capstone.{Cache, NationalWeatherService, Time}
+  alias Capstone.{Cache, Time, Weather}
 
   @producer BroadwayRabbitMQ.Producer
 
@@ -32,7 +32,7 @@ defmodule Capstone.Pipeline.Weather do
     weather =
       case Cache.get("#{key},#{Time.next_hour()}") do
         nil ->
-          %{"end_time" => end_time, "weather" => weather} = NationalWeatherService.get_weather!(grid_id, grid_x, grid_y)
+          %{"end_time" => end_time, "weather" => weather} = Weather.get_weather!(grid_id, grid_x, grid_y)
 
           Cache.set("#{key},#{end_time}", weather)
 
