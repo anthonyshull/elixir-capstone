@@ -1,6 +1,6 @@
 require Logger
 
-case File.rm(Capstone.CacheServer.save_path()) do
+case File.rm(Capstone.Cache.Server.save_path()) do
   :ok -> Logger.info("Cache file cleared")
   _ -> :ok
 end
