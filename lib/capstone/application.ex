@@ -8,7 +8,7 @@ defmodule Capstone.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      Capstone.CacheServer,
+      Capstone.Cache.Server,
       Capstone.Repo,
       Capstone.Pipeline.Airport,
       Capstone.Pipeline.Grid,

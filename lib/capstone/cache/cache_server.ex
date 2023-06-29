@@ -1,4 +1,4 @@
-defmodule Capstone.CacheServer do
+defmodule Capstone.Cache.Server do
   use GenServer
 
   @table_name :cache

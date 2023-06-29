@@ -1,11 +1,11 @@
 defmodule Capstone.Cache do
-  alias Capstone.CacheServer
+  alias Capstone.Cache.Server
 
   def get(key) do
-    GenServer.call(CacheServer, {:get, key})
+    GenServer.call(Server, {:get, key})
   end
 
   def set(key, value) do
-    GenServer.cast(CacheServer, {:set, key, value})
+    GenServer.cast(Server, {:set, key, value})
   end
 end
