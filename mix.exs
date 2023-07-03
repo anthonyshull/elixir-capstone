@@ -27,6 +27,7 @@ defmodule Capstone.MixProject do
       {:broadway, "1.0.7"},
       {:broadway_rabbitmq, "0.8.0"},
       {:ecto_sql, "3.10.1"},
+      {:faker, "0.17.0"},
       {:flow, "1.2.4"},
       {:jason, "1.4.0"},
       {:mox, "1.0.2"},
