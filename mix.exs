@@ -40,8 +40,8 @@ defmodule Capstone.MixProject do
 
   defp aliases do
     [
-      reset: ["ecto.rollback", "ecto.migrate", "run priv/reset.exs", "run priv/repo/seed.exs"],
-      setup: ["ecto.migrate", "run priv/repo/seed.exs"]
+      reset: ["ecto.rollback", "ecto.migrate", "run priv/reset.exs"],
+      setup: ["ecto.migrate", "run priv/reset.exs"]
     ]
   end
 end

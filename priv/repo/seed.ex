@@ -1,6 +1,6 @@
-defmodule Capstone.Seed do
-  require Logger
+require Logger
 
+defmodule Seed do
   alias NimbleCSV.RFC4180, as: CSV
   alias Capstone.{Airport, Repo}
 
