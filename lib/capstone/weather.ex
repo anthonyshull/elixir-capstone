@@ -1,6 +1,6 @@
 defmodule Capstone.Weather do
   @moduledoc """
-  This module is responsible for fetching weather data from the National Weather Service API.
+  Fetches grid information and weather information from the [National Weather Service](https://weather-gov.github.io/api/general-faqs).
   """
 
   use Timex
