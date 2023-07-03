@@ -26,9 +26,10 @@ defmodule Capstone.Pipeline.Grid do
   def handle_message(_processor, message, _context) do
     channel = message.metadata.amqp_channel
 
-    airport = Repo.get(Airport, Map.get(message.data, "code"))
-    airport = Airport.changeset(airport, Map.drop(message.data, ["code"]))
-    airport = Repo.update!(airport)
+    airport =
+      Repo.get(Airport, Map.get(message.data, "code"))
+      |> Airport.changeset(Map.drop(message.data, ["code"]))
+      |> Repo.update!()
 
     AMQP.Basic.publish(channel, "", "weather_pipeline", airport |> Jason.encode!())
 
