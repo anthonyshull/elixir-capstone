@@ -44,7 +44,11 @@ defmodule Capstone.Pipeline.Airport do
 
   defp group_messages(messages) do
     Enum.group_by(messages, fn message ->
-      message.data |> Jason.decode!() |> Map.take(["city", "state"]) |> Map.values() |> List.to_tuple()
+      message.data
+      |> Jason.decode!()
+      |> Map.take(["city", "state"])
+      |> Map.values()
+      |> List.to_tuple()
     end)
   end
 
@@ -56,6 +60,7 @@ defmodule Capstone.Pipeline.Airport do
 
       Enum.map(tail, fn message -> Broadway.Message.put_data(message, []) end)
       |> List.insert_at(0, Broadway.Message.put_data(head, airports))
-    end) |> List.flatten()
+    end)
+    |> List.flatten()
   end
 end

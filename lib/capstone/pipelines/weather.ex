@@ -32,11 +32,13 @@ defmodule Capstone.Pipeline.Weather do
     weather =
       case Cache.get("#{key},#{Time.next_hour()}") do
         nil ->
-          %{"end_time" => end_time, "weather" => weather} = Weather.get_weather!(grid_id, grid_x, grid_y)
+          %{"end_time" => end_time, "weather" => weather} =
+            Weather.get_weather!(grid_id, grid_x, grid_y)
 
           Cache.set("#{key},#{end_time}", weather)
 
           weather
+
         value ->
           value
       end
