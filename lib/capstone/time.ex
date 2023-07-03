@@ -1,9 +1,5 @@
 defmodule Capstone.Time do
-  def next_hour do
-    Timex.now |> end_of_hour()
-  end
-
-  defp end_of_hour(date_time) do
+  def next_hour(date_time \\ Timex.now()) do
     date_time
     |> Map.replace(:minute, 0)
     |> Map.replace(:second, 0)
