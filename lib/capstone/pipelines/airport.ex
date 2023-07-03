@@ -24,9 +24,8 @@ defmodule Capstone.Pipeline.Airport do
   end
 
   def handle_message(_processor, message, _context) do
-    channel = message.metadata.amqp_channel
-
     Enum.map(message.data, fn airport ->
+      channel = message.metadata.amqp_channel
       payload = airport |> Jason.encode!()
 
       if airport.grid_id == nil do
@@ -40,14 +39,19 @@ defmodule Capstone.Pipeline.Airport do
   end
 
   def prepare_messages(messages, _context) do
-    cities_states = Enum.map(messages, fn message ->
+    messages_by_city_state = Enum.group_by(messages, fn message ->
       message.data |> Jason.decode!() |> Map.take(["city", "state"]) |> Map.values() |> List.to_tuple()
     end)
 
-    airports = Airport.in_cities_states(cities_states) |> Map.values()
+    airports = Airport.in_cities_states(messages_by_city_state |> Map.keys())
 
-    Enum.zip_with(messages, airports, fn message, airports ->
-      Broadway.Message.put_data(message, airports)
-    end)
+    Enum.map(messages_by_city_state, fn {city_state, messages} ->
+      airports = Map.get(airports, city_state, [])
+
+      [head | tail] = messages
+
+      Enum.map(tail, fn message -> Broadway.Message.put_data(message, inspect(city_state)) end)
+      |> List.insert_at(0, Broadway.Message.put_data(head, airports))
+    end) |> List.flatten()
   end
 end
