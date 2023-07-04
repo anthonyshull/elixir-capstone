@@ -40,7 +40,7 @@ defmodule Capstone.MixProject do
 
   defp aliases do
     [
-      reset: ["ecto.rollback", "ecto.migrate", "run priv/reset.exs"],
+      reset: ["vcr.delete --all", "ecto.rollback", "ecto.migrate", "run priv/reset.exs"],
       setup: ["ecto.migrate", "run priv/reset.exs"]
     ]
   end
