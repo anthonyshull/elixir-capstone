@@ -1,4 +1,6 @@
 defmodule Capstone.Time do
+  use Timex
+
   def next_hour(date_time \\ Timex.now()) do
     date_time
     |> Map.replace(:minute, 0)

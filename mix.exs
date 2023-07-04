@@ -5,14 +5,13 @@ defmodule Capstone.MixProject do
     [
       app: :capstone,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "1.14.5",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases()
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger],
@@ -20,7 +19,6 @@ defmodule Capstone.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:amqp, "3.3.0"},
@@ -30,7 +28,7 @@ defmodule Capstone.MixProject do
       {:faker, "0.17.0"},
       {:flow, "1.2.4"},
       {:jason, "1.4.0"},
-      {:mox, "1.0.2"},
+      {:mox, "1.0.2", only: :test},
       {:nimble_csv, "1.2.0"},
       {:postgrex, "0.17.1"},
       {:req, "0.3.10"},

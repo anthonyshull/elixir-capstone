@@ -5,7 +5,7 @@ defmodule Capstone.WeatherTest do
 
   setup_all do
     %{
-      end_time: Faker.DateTime.forward(4),
+      end_time: Faker.DateTime.forward(1),
       grid_id: Faker.Code.issn(),
       grid_x: Enum.random(0..99),
       grid_y: Enum.random(0..99)
@@ -14,39 +14,46 @@ defmodule Capstone.WeatherTest do
 
   setup :verify_on_exit!
 
-  test "get_grid!/2 returns a map with grid_id, grid_x, and grid_y", %{
-    grid_id: grid_id,
-    grid_x: grid_x,
-    grid_y: grid_y
-  } do
-    response = %{"properties" => %{"gridId" => grid_id, "gridX" => grid_x, "gridY" => grid_y}}
-    expected = %{"grid_id" => grid_id, "grid_x" => grid_x, "grid_y" => grid_y}
+  test "get_grid!/2", context do
+    expect(Capstone.MockWeather.Api, :get_grid_response!, fn _latitude, _longitude ->
+      %{
+        "properties" => %{
+          "gridId" => context.grid_id,
+          "gridX" => context.grid_x,
+          "gridY" => context.grid_y
+        }
+      }
+    end)
 
-    Capstone.MockWeather.Api
-    |> expect(:get_grid_response!, fn _latitude, _longitude -> response end)
+    expected = %{
+      "grid_id" => context.grid_id,
+      "grid_x" => context.grid_x,
+      "grid_y" => context.grid_y
+    }
 
-    assert Capstone.Weather.get_grid!(Faker.Address.latitude(), Faker.Address.longitude()) ==
-             expected
+    actual = Capstone.Weather.get_grid!(Faker.Address.latitude(), Faker.Address.longitude())
+
+    assert actual == expected
   end
 
-  test "get_weather!/3 returns a map with end_time and weather", context do
-    response = %{
-      "properties" => %{
-        "periods" => [
-          %{
-            "endTime" => context.end_time |> DateTime.to_iso8601(),
-            "shortForecast" => "Sunny"
-          }
-        ]
+  test "get_weather!/3", context do
+    expect(Capstone.MockWeather.Api, :get_weather_response!, fn _grid_id, _grid_x, _grid_y ->
+      %{
+        "properties" => %{
+          "periods" => [
+            %{
+              "endTime" => context.end_time |> DateTime.to_iso8601(),
+              "shortForecast" => "Sunny"
+            }
+          ]
+        }
       }
-    }
+    end)
 
     expected = %{"end_time" => context.end_time, "weather" => "Sunny"}
 
-    Capstone.MockWeather.Api
-    |> expect(:get_weather_response!, fn _grid_id, _grid_x, _grid_y -> response end)
+    actual = Capstone.Weather.get_weather!(context.grid_id, context.grid_x, context.grid_y)
 
-    assert Capstone.Weather.get_weather!(context.grid_id, context.grid_x, context.grid_y) ==
-             expected
+    assert actual == expected
   end
 end
