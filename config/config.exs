@@ -8,3 +8,7 @@ config :capstone, Capstone.Repo,
   log: false
 
 config :capstone, :ecto_repos, [Capstone.Repo]
+
+config :exvcr, [
+  vcr_cassette_library_dir: "tmp/fixtures"
+]

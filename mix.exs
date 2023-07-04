@@ -8,7 +8,8 @@ defmodule Capstone.MixProject do
       elixir: "1.14.5",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      aliases: aliases()
+      aliases: aliases(),
+      xref: [exclude: [:hackney_request]]
     ]
   end
 
@@ -25,6 +26,7 @@ defmodule Capstone.MixProject do
       {:broadway, "1.0.7"},
       {:broadway_rabbitmq, "0.8.0"},
       {:ecto_sql, "3.10.1"},
+      {:exvcr, "0.14.1", only: [:dev, :test]},
       {:faker, "0.17.0"},
       {:flow, "1.2.4"},
       {:jason, "1.4.0"},

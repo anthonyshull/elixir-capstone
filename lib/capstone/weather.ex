@@ -27,9 +27,8 @@ defmodule Capstone.Weather do
   def get_weather!(grid_id, grid_x, grid_y) do
     %{"endTime" => end_time, "shortForecast" => weather} =
       Api.get_weather_response!(grid_id, grid_x, grid_y)
-      |> Map.fetch!("properties")
-      |> Map.fetch!("periods")
-      |> Enum.fetch!(0)
+      |> get_in(["properties", "periods"])
+      |> List.first()
       |> Map.take(["endTime", "shortForecast"])
 
     end_time = end_time |> Timex.parse!("{ISO:Extended}") |> Timezone.convert(Timezone.get("UTC"))
