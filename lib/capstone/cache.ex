@@ -16,10 +16,14 @@ defmodule Capstone.Cache do
     value = GenServer.call(__MODULE__, {:get, key})
 
     if value == nil && is_function(f) do
+      Logger.debug("Cache miss for #{key}")
+
       value = f.()
       set(key, value)
       value
     else
+      Logger.debug("Cache hit for #{key} with value #{value}")
+
       value
     end
   end
@@ -56,6 +60,8 @@ defmodule Capstone.Cache do
 
   @impl true
   def handle_info({:bust, key}, state) do
+    Logger.debug("Busting cache for #{key} after #{state[:interval]}ms")
+
     :dets.delete(@table_name, key)
 
     {:noreply, state}

@@ -29,6 +29,10 @@ defmodule Capstone.Pipeline.Airport do
       payload = airport |> Jason.encode!()
       routing_key = if airport.grid_id == nil, do: "grid_pipeline", else: "weather_pipeline"
 
+      if routing_key == "grid_pipeline" do
+        Logger.debug("No grid information found for #{airport.name}")
+      end
+
       AMQP.Basic.publish(channel, "", routing_key, payload)
     end)
 
