@@ -27,21 +27,11 @@ defmodule Capstone.Pipeline.Weather do
     data = message.data |> Jason.decode!()
 
     %{"grid_id" => grid_id, "grid_x" => grid_x, "grid_y" => grid_y} = data
-    key = "#{grid_id},#{grid_x},#{grid_y}"
+    key = "#{grid_id},#{grid_x},#{grid_y},#{Time.next_hour()}"
 
-    weather =
-      case Cache.get("#{key},#{Time.next_hour()}") do
-        nil ->
-          %{"end_time" => end_time, "weather" => weather} =
-            Weather.get_weather!(grid_id, grid_x, grid_y)
-
-          Cache.set("#{key},#{end_time}", weather)
-
-          weather
-
-        value ->
-          value
-      end
+    weather = Cache.get(key, fn ->
+      Weather.get_weather!(grid_id, grid_x, grid_y)
+    end)
 
     data = Map.merge(data, %{"weather" => weather})
     message = Broadway.Message.put_data(message, data)

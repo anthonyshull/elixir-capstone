@@ -23,16 +23,11 @@ defmodule Capstone.Weather do
   @doc """
   Gets weather information for a given grid.
   """
-  @spec get_weather!(String.t(), integer(), integer()) :: %{String.t() => String.t()}
+  @spec get_weather!(String.t(), integer(), integer()) :: String.t()
   def get_weather!(grid_id, grid_x, grid_y) do
-    %{"endTime" => end_time, "shortForecast" => weather} =
-      Api.get_weather_response!(grid_id, grid_x, grid_y)
-      |> get_in(["properties", "periods"])
-      |> List.first()
-      |> Map.take(["endTime", "shortForecast"])
-
-    end_time = end_time |> Timex.parse!("{ISO:Extended}") |> Timezone.convert(Timezone.get("UTC"))
-
-    %{"end_time" => end_time, "weather" => weather}
+    Api.get_weather_response!(grid_id, grid_x, grid_y)
+    |> get_in(["properties", "periods"])
+    |> List.first()
+    |> Map.get("shortForecast")
   end
 end

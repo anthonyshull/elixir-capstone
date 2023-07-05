@@ -1,6 +1,8 @@
 defmodule Capstone.Cache do
   use GenServer
 
+  require Logger
+
   @table_name :cache
   @save_path "/tmp/#{@table_name}"
 
@@ -10,8 +12,16 @@ defmodule Capstone.Cache do
     GenServer.start_link(__MODULE__, args, name: __MODULE__)
   end
 
-  def get(key) do
-    GenServer.call(__MODULE__, {:get, key})
+  def get(key, f \\ nil) do
+    value = GenServer.call(__MODULE__, {:get, key})
+
+    if value == nil && is_function(f) do
+      value = f.()
+      set(key, value)
+      value
+    else
+      value
+    end
   end
 
   def set(key, value) do
