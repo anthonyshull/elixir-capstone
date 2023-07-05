@@ -9,6 +9,5 @@ config :capstone, Capstone.Repo,
 
 config :capstone, :ecto_repos, [Capstone.Repo]
 
-config :exvcr, [
+config :exvcr,
   vcr_cassette_library_dir: "tmp/fixtures"
-]

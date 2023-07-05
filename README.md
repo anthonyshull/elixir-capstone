@@ -59,3 +59,7 @@ You can reset the data at any time with:
 ```
 %> mix reset
 ```
+
+## Tests
+
+Multiple test patterns are on display.

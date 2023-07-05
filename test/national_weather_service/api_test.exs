@@ -16,7 +16,8 @@ defmodule Capstone.NationalWeatherService.ApiTest do
     use_cassette "get_weather_response" do
       assert response = Api.get_weather_response!("EWX", 159, 88)
 
-      assert %{"endTime" => _, "shortForecast" => _} = get_in(response, ["properties", "periods"]) |> List.first()
+      assert %{"endTime" => _, "shortForecast" => _} =
+               get_in(response, ["properties", "periods"]) |> List.first()
     end
   end
 end

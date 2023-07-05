@@ -6,7 +6,7 @@ defmodule Capstone.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      Capstone.Cache.Server,
+      {Capstone.Cache, [interval: 5000]},
       Capstone.Repo,
       Capstone.Pipeline.Airport,
       Capstone.Pipeline.Grid,
