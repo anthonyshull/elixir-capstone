@@ -42,7 +42,6 @@ defmodule Capstone.WeatherTest do
         "properties" => %{
           "periods" => [
             %{
-              "endTime" => context.end_time |> DateTime.to_iso8601(),
               "shortForecast" => "Sunny"
             }
           ]
@@ -50,7 +49,7 @@ defmodule Capstone.WeatherTest do
       }
     end)
 
-    expected = %{"end_time" => context.end_time, "weather" => "Sunny"}
+    expected = "Sunny"
 
     actual = Capstone.Weather.get_weather!(context.grid_id, context.grid_x, context.grid_y)
 
