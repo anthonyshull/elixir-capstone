@@ -44,7 +44,10 @@ defmodule Capstone.AirportTest do
     end
 
     test "there are no airports" do
-      assert %{} = Airport.in_cities_states([{"Chicago", "IL"}])
+      airports = Airport.in_cities_states([{"Chicago", "IL"}, {"New York", "NY"}])
+
+      assert airports[{"Chicago", "IL"}] |> Enum.count() == 3
+      assert airports[{"New York", "NY"}] |> Enum.count() == 2
     end
   end
 end
