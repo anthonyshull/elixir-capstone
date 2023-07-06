@@ -1,25 +1,13 @@
 defmodule Capstone.Airport do
   use Ecto.Schema
 
-  alias Capstone.Repo
-
   import Ecto.Changeset
 
-  @derive {Jason.Encoder,
-           only: [
-             :code,
-             :name,
-             :type,
-             :city,
-             :state,
-             :country,
-             :latitude,
-             :longitude,
-             :grid_id,
-             :grid_x,
-             :grid_y
-           ]}
+  alias Capstone.Repo
+
+  @derive {Jason.Encoder, except: [:__meta__]}
   @primary_key {:code, :string, autogenerate: false}
+  @required_fields [:name, :type, :city, :state, :country, :latitude, :longitude]
 
   schema "airports" do
     field(:name, :string)
@@ -40,21 +28,18 @@ defmodule Capstone.Airport do
   @doc false
   def changeset(airport, attrs) do
     airport
-    |> cast(attrs, [
-      :name,
-      :type,
-      :city,
-      :state,
-      :country,
-      :latitude,
-      :longitude,
-      :grid_id,
-      :grid_x,
-      :grid_y
-    ])
-    |> validate_required([:name, :type, :city, :state, :country, :latitude, :longitude])
+    |> cast(attrs, all_fields())
+    |> validate_required(required_fields())
     |> validate_inclusion(:type, ["large_airport", "medium_airport", "small_airport"])
     |> validate_inclusion(:country, ["US"])
+  end
+
+  def all_fields() do
+    __MODULE__.__schema__(:fields)
+  end
+
+  def required_fields() do
+    @required_fields
   end
 
   def in_cities_states(cities_states) do
