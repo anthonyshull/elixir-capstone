@@ -29,9 +29,10 @@ defmodule Capstone.Pipeline.Weather do
     %{"grid_id" => grid_id, "grid_x" => grid_x, "grid_y" => grid_y} = data
     key = "#{grid_id},#{grid_x},#{grid_y},#{Time.next_hour()}"
 
-    weather = Cache.get(key, fn ->
-      Weather.get_weather!(grid_id, grid_x, grid_y)
-    end)
+    weather =
+      Cache.get(key, fn ->
+        Weather.get_weather!(grid_id, grid_x, grid_y)
+      end)
 
     data = Map.merge(data, %{"weather" => weather})
     message = Broadway.Message.put_data(message, data)

@@ -11,6 +11,7 @@ defmodule Capstone.MixProject do
       deps: deps(),
       aliases: aliases(),
       xref: [exclude: [:hackney_request]],
+      test_coverage: [ignore_modules: [Capstone.Factory.Airport, Capstone.Support.DataCase]]
     ]
   end
 
