@@ -13,8 +13,8 @@ defmodule Capstone.Factory.Airport do
       latitude: Faker.Address.latitude(),
       longitude: Faker.Address.longitude(),
       grid_id: Faker.Lorem.word() |> String.slice(0, 3) |> String.upcase(),
-      grid_x: Faker.Number.number(2),
-      grid_y: Faker.Number.number(2)
+      grid_x: Enum.random(1..99),
+      grid_y: Enum.random(1..99)
     }
   end
 end

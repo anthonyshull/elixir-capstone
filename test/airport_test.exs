@@ -2,13 +2,14 @@ defmodule Capstone.AirportTest do
   use ExUnit.Case, async: true
   use Capstone.Support.DataCase
 
-  import Ecto.Query, only: [first: 1]
+  import Ecto.Query
+  import Capstone.Factory.Airport, only: [airport_factory: 0, insert: 1]
 
   alias Capstone.Airport
 
   describe "changeset/2" do
     setup do
-      %{airport: Airport |> first() |> Repo.one()}
+      %{airport: airport_factory()}
     end
 
     test "returns a valid changeset", context do
@@ -35,11 +36,21 @@ defmodule Capstone.AirportTest do
   end
 
   describe "in_cities_states/1" do
-    test "there are no airports" do
-      airports = Airport.in_cities_states([{"Chicago", "IL"}, {"New York", "NY"}])
+    setup do
+      %{airports: Enum.map(0..9, fn _ -> insert(:airport) end) }
+    end
 
-      assert airports |> Map.get({"Chicago", "IL"}) |> Enum.count() == 3
-      assert airports |> Map.get({"New York", "NY"}) |> Enum.count() == 2
+    test "the correct number of airports get returned", context do
+      keys = context.airports |> Enum.map(&{&1.city, &1.state})
+      airports = Airport.in_cities_states(keys)
+
+      query = fn {city, state} ->
+        from a in Airport, where: a.city == ^city and a.state == ^state
+      end
+
+      Enum.each(keys, fn key ->
+        assert length(airports[key]) == Repo.all(query.(key)) |> length()
+      end)
     end
   end
 end

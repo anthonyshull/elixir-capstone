@@ -44,7 +44,7 @@ defmodule Capstone.MixProject do
     [
       reset: ["vcr.delete --all", "ecto.rollback", "ecto.migrate", "run priv/reset.exs"],
       setup: ["ecto.migrate", "run priv/reset.exs"],
-      test: ["ecto.create --quiet", "run priv/reset.exs", "test"]
+      test: ["ecto.create --quiet", "ecto.rollback", "ecto.migrate", "test"]
     ]
   end
 
