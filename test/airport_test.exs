@@ -2,7 +2,7 @@ defmodule Capstone.AirportTest do
   use ExUnit.Case, async: true
   use Capstone.Support.DataCase
 
-  import Ecto.Query
+  import Ecto.Query, only: [first: 1, from: 2, last: 1]
   import Capstone.Factory.Airport, only: [airport_factory: 0, insert: 1]
 
   alias Capstone.Airport
@@ -36,21 +36,25 @@ defmodule Capstone.AirportTest do
   end
 
   describe "in_cities_states/1" do
-    setup do
-      %{airports: Enum.map(0..9, fn _ -> insert(:airport) end)}
-    end
+    test "the correct number of airports get returned" do
+      Enum.map(0..3, fn _ -> insert(:airport) end)
 
-    test "the correct number of airports get returned", context do
-      keys = context.airports |> Enum.map(&{&1.city, &1.state})
+      one = Airport |> first() |> Repo.one()
+      two = Airport |> last() |> Repo.one()
+
+      keys = [one, two] |> Enum.map(&{&1.city, &1.state})
+
+      two |> Ecto.Changeset.change(city: one.city, state: one.state) |> Repo.update!()
       airports = Airport.in_cities_states(keys)
 
       query = fn {city, state} ->
         from(a in Airport, where: a.city == ^city and a.state == ^state)
       end
 
-      Enum.each(keys, fn key ->
-        assert length(airports[key]) == Repo.all(query.(key)) |> length()
-      end)
+      assert Map.get(airports, List.first(keys)) |> Enum.count() ==
+               query.(List.first(keys)) |> Repo.all() |> Enum.count()
+
+      assert Map.get(airports, List.last(keys)) == nil
     end
 
     test "an empty map gets returned when no values are found" do

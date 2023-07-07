@@ -4,8 +4,8 @@ defmodule Capstone.Factory.Airport do
 
   def airport_factory() do
     %Airport{
-      code: Faker.Airports.iata(),
-      name: Faker.Airports.name(),
+      code: Faker.Pokemon.name() |> String.upcase(),
+      name: Faker.Pokemon.name(),
       type: ["large_airport", "medium_airport", "small_airport"] |> Enum.random(),
       city: Faker.Address.city(),
       state: Faker.Address.state_abbr(),

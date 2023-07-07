@@ -4,6 +4,7 @@ defmodule Capstone.NationalWeatherService.ApiTest do
 
   alias Capstone.NationalWeatherService.Api
 
+  @tag :vcr
   test "get_grid_response!/2" do
     use_cassette "get_grid_response" do
       assert response = Api.get_grid_response!(30.197535, -97.662015)
@@ -12,6 +13,7 @@ defmodule Capstone.NationalWeatherService.ApiTest do
     end
   end
 
+  @tag :vcr
   test "get_weather_response!/3" do
     use_cassette "get_weather_response" do
       assert response = Api.get_weather_response!("EWX", 159, 88)
