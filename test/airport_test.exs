@@ -1,18 +1,14 @@
 defmodule Capstone.AirportTest do
   use ExUnit.Case, async: true
+  use Capstone.Support.DataCase
 
   import Ecto.Query, only: [first: 1]
 
-  alias Ecto.Changeset
-  alias Capstone.{Airport, Repo}
+  alias Capstone.Airport
 
   describe "changeset/2" do
     setup do
-      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
-    end
-
-    setup do
-      %{airport: Airport |> first |> Repo.one()}
+      %{airport: Airport |> first() |> Repo.one()}
     end
 
     test "returns a valid changeset", context do
@@ -39,15 +35,11 @@ defmodule Capstone.AirportTest do
   end
 
   describe "in_cities_states/1" do
-    setup do
-      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
-    end
-
     test "there are no airports" do
       airports = Airport.in_cities_states([{"Chicago", "IL"}, {"New York", "NY"}])
 
-      assert airports[{"Chicago", "IL"}] |> Enum.count() == 3
-      assert airports[{"New York", "NY"}] |> Enum.count() == 2
+      assert airports |> Map.get({"Chicago", "IL"}) |> Enum.count() == 3
+      assert airports |> Map.get({"New York", "NY"}) |> Enum.count() == 2
     end
   end
 end
