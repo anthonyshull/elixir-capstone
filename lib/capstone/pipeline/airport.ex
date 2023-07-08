@@ -5,18 +5,13 @@ defmodule Capstone.Pipeline.Airport do
 
   alias Capstone.Airport
 
-  @producer BroadwayRabbitMQ.Producer
-
-  @producer_config [
-    declare: [durable: true],
-    on_failure: :reject,
-    queue: "airport_pipeline"
-  ]
-
   def start_link(_args) do
+    producer_module = Application.fetch_env!(:capstone, :airport_producer_module)
+    producer_config = Application.fetch_env!(:capstone, :airport_producer_config)
+
     options = [
-      name: Capstone.Pipeline.Airport,
-      producer: [module: {@producer, @producer_config}],
+      name: __MODULE__,
+      producer: [module: {producer_module, producer_config}],
       processors: [default: []]
     ]
 

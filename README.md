@@ -51,11 +51,12 @@ The process is idempotent and only takes a matter of seconds (mostly downloading
 ```
 
 ```elixir
+iex> {connection, channel} = subscribe.()
 iex> lookup.("Austin", "TX")
+iex> unsubscribe.(connection, channel)
 ```
 
 You can reset the data at any time with:
-
 ```
 %> mix reset
 ```
@@ -63,3 +64,8 @@ You can reset the data at any time with:
 ## Tests
 
 Multiple test patterns are on display.
+
+* [Time](test/capstone/time_test.exs) includes simple unit tests.
+* [Airport](test/capstone/airport_test.exs) uses [CaseTemplate](https://hexdocs.pm/ex_unit/ExUnit.CaseTemplate.html) and an [ExMachina](https://hexdocs.pm/ex_machina/readme.html) factory.
+* [Weather](test/capstone/weather_test.exs) uses [Mox](https://hexdocs.pm/mox/Mox.html) to mock the NWS API.
+* [NWS API](test/capstone/national_weather_service/api_test.exs) uses [ExVCR](https://hexdocs.pm/exvcr/readme.html) to test against real responses.

@@ -49,6 +49,6 @@ defmodule Capstone.MixProject do
     ]
   end
 
-  defp elixirc_paths(:test), do: ["lib", "test/factory", "test/support"]
+  defp elixirc_paths(:test), do: ["lib", "test/capstone/factory", "test/capstone/support"]
   defp elixirc_paths(_), do: ["lib"]
 end

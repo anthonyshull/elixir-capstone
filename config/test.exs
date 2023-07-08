@@ -7,3 +7,7 @@ config :capstone, Capstone.Repo,
   hostname: "localhost",
   log: false,
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :capstone,
+  airport_producer_module: Broadway.DummyProducer,
+  airport_producer_config: []
